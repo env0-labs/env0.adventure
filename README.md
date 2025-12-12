@@ -33,8 +33,8 @@ v0 is complete and **must not be extended**.
 - Numbered choices only
 - Disabled choices shown with reasons
 - State consists only of:
-    - `currentSceneId`
-    - boolean flags
+  - `currentSceneId`
+  - boolean flags
 
 Canonical v0 example:
 - A hallway
@@ -59,7 +59,7 @@ v0 exists to prove the **shape**, not the scale.
 
 ---
 
-## v0.1 — Defined
+## v0.1 — Implemented
 
 v0.1 extends v0 **horizontally**, not vertically.
 
@@ -69,7 +69,7 @@ It adds enough interactivity to make JSON authoring worthwhile, without introduc
 
 ### What v0.1 adds
 
-- Story content authored in **JSON**
+- Story content authored in **JSON** (`story.json`)
 - All scenes, choices, and effects loaded at startup
 - A small navigable space of **4–5 rooms**
 - Basic navigation between rooms
@@ -93,12 +93,12 @@ Navigation should feel like moving through a mundane physical space.
 - Choices always visible
 - Disabled choices shown with a reason
 - State remains:
-    - `currentSceneId`
-    - boolean flags only
+  - `currentSceneId`
+  - boolean flags only
 - Effects remain limited to:
-    - `SetFlag`
-    - `ClearFlag`
-    - `GotoScene`
+  - `SetFlag`
+  - `ClearFlag`
+  - `GotoScene`
 - Exactly one scene transition per choice
 - Fail-fast on invalid data
 
@@ -106,9 +106,7 @@ The engine remains intentionally dumb.
 
 ---
 
-### v0.1 Success Criteria
-
-v0.1 is complete when:
+### v0.1 Success Criteria (met)
 
 - The player can navigate between **at least 4 rooms**
 - At least one route or room is gated by a flag
@@ -139,7 +137,7 @@ v0.1 exists to prove **authorability**, not flexibility.
 ## Status
 
 - **v0**: complete and frozen on `main`
-- **v0.1**: active development branch
+- **v0.1**: implemented on `v0.1`
 
 The kitchen still exists.  
 Now there are a few more rooms.  
