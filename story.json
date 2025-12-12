@@ -1,0 +1,140 @@
+{
+  "startSceneId": "hallway",
+  "scenes": [
+    {
+      "id": "hallway",
+      "text": "You are standing in a narrow hallway. The kitchen door is shut tight, and a few other rooms branch off this small apartment.",
+      "isEnd": false,
+      "choices": [
+        {
+          "number": 1,
+          "text": "Try the kitchen door",
+          "requiresAll": ["kitchenUnlocked"],
+          "disabledReason": "The door is locked from the inside.",
+          "effects": [
+            { "type": "GotoScene", "value": "kitchen" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Feel for the spare key in your coat",
+          "requiresNone": ["kitchenUnlocked"],
+          "disabledReason": "You already pocketed the key.",
+          "effects": [
+            { "type": "SetFlag", "value": "kitchenUnlocked" }
+          ]
+        },
+        {
+          "number": 3,
+          "text": "Peek into the living room",
+          "effects": [
+            { "type": "GotoScene", "value": "living_room" }
+          ]
+        },
+        {
+          "number": 4,
+          "text": "Step into the bedroom",
+          "effects": [
+            { "type": "GotoScene", "value": "bedroom" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "living_room",
+      "text": "A sagging couch faces a muted television. A narrow door to a utility closet hums softly.",
+      "isEnd": false,
+      "choices": [
+        {
+          "number": 1,
+          "text": "Open the utility closet",
+          "effects": [
+            { "type": "GotoScene", "value": "utility_closet" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Return to the hallway",
+          "effects": [
+            { "type": "GotoScene", "value": "hallway" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "utility_closet",
+      "text": "The closet is cramped but tidy. A breaker box clicks quietly next to a bundle of cleaning supplies.",
+      "isEnd": false,
+      "choices": [
+        {
+          "number": 1,
+          "text": "Flip the main breaker",
+          "requiresNone": ["powerRestored"],
+          "disabledReason": "The breaker is already on.",
+          "effects": [
+            { "type": "SetFlag", "value": "powerRestored" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Head back to the living room",
+          "effects": [
+            { "type": "GotoScene", "value": "living_room" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bedroom",
+      "text": "The bedroom is dim, lit only by streetlight through the blinds. A nightstand drawer is half-open.",
+      "isEnd": false,
+      "choices": [
+        {
+          "number": 1,
+          "text": "Check the nightstand drawer",
+          "requiresNone": ["flashlight"],
+          "disabledReason": "You already rummaged through it.",
+          "effects": [
+            { "type": "SetFlag", "value": "flashlight" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Return to the hallway",
+          "effects": [
+            { "type": "GotoScene", "value": "hallway" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "text": "You slip into the kitchen. Countertops are clean, but the kettle sits cold in the corner.",
+      "isEnd": false,
+      "choices": [
+        {
+          "number": 1,
+          "text": "Start the kettle and make tea",
+          "requiresAll": ["powerRestored"],
+          "disabledReason": "Nothing works while the power is off.",
+          "effects": [
+            { "type": "GotoScene", "value": "end" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Head back to the hallway",
+          "effects": [
+            { "type": "GotoScene", "value": "hallway" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "text": "The kettle whistles. You pour a mug of tea and call the evening a success.",
+      "isEnd": true,
+      "choices": []
+    }
+  ]
+}

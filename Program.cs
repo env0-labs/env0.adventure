@@ -1,4 +1,5 @@
-﻿using env0.adventure.Engine;
+using System.Text.Json;
+using env0.adventure.Engine;
 using env0.adventure.Model;
 using env0.adventure.Runtime;
 
@@ -6,55 +7,30 @@ Console.WriteLine("env0.adventure booting");
 Console.WriteLine();
 
 // ------------------------------------------------------------------
-// Temporary hardcoded scenes (JSON comes later)
+// Load story from JSON
 // ------------------------------------------------------------------
-var scenes = new List<SceneDefinition>
-{
-    new()
+const string storyPath = "story.json";
+
+if (!File.Exists(storyPath))
+    throw new InvalidOperationException($"Story file not found: {storyPath}");
+
+var json = File.ReadAllText(storyPath);
+
+var story = JsonSerializer.Deserialize<StoryDefinition>(
+    json,
+    new JsonSerializerOptions
     {
-        Id = "hallway",
-        Text = "You are standing in a narrow hallway. A door leads to the kitchen.",
-        IsEnd = false,
-        Choices = new()
-        {
-            new ChoiceDefinition
-            {
-                Number = 1,
-                Text = "Try the kitchen door",
-                RequiresAll = new() { "doorUnlocked" },
-                DisabledReason = "The door is locked.",
-                Effects = new()
-                {
-                    new EffectDefinition { Type = EffectType.GotoScene, Value = "kitchen" }
-                }
-            },
-            new ChoiceDefinition
-            {
-                Number = 2,
-                Text = "Check the coat pocket for a key",
-                RequiresNone = new() { "doorUnlocked" },
-                DisabledReason = "You already have the key.",
-                Effects = new()
-                {
-                    new EffectDefinition { Type = EffectType.SetFlag, Value = "doorUnlocked" }
-                }
-            }
-        }
-    },
-    new()
-    {
-        Id = "kitchen",
-        Text = "You are in a small kitchen. You made it in. The world remains stubbornly mundane.",
-        IsEnd = true,
-        Choices = new()
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
     }
-};
+) ?? throw new InvalidOperationException("Story file could not be parsed.");
 
 // ------------------------------------------------------------------
 // Engine setup
 // ------------------------------------------------------------------
-var repo = new SceneRepository(scenes);
-var state = new GameState("hallway");
+var repo = new SceneRepository(story);
+var state = new GameState(repo.StartSceneId);
 var evaluator = new ChoiceEvaluator();
 var executor = new EffectExecutor();
 
