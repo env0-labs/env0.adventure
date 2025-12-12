@@ -1,201 +1,146 @@
-﻿# env0.adventure — v0
+﻿# env0.adventure
 
-## What this is
+A deliberately minimal, old-school **Choose Your Own Adventure engine** written in C#.
 
-A **minimal, old-school Choose Your Own Adventure engine** written in C#.
+This project is built in small, frozen versions.  
+Each version defines a clear endpoint, is completed, and then left alone.
 
-This is a deliberately constrained experiment to prove that:
-- a tiny, boring core can exist,
-- it can be reasoned about easily,
-- and it can later be rendered by something like Godot without rewriting the logic.
-
-This is **not** a game yet.  
-This is **not** a framework.  
-This is a working foundation that can be thrown away without regret.
+If it feels boring, it’s working.
 
 ---
 
-## v0 Success Criteria
+## v0 — Frozen
 
-The experiment is considered **successful** if all of the following are true:
+### What v0 is
 
-### Backend
-- One navigable area consisting of multiple connected locations
-- One simple activity that can be completed
-- Pure C# logic with no UI concerns
+v0 is a proof of viability.
 
-### Frontend (for later)
-- Single static screen
-- Simple CRT-style visual treatment
-- No audio
-- No reactive or dynamic FX
+It demonstrates that:
+- a minimal CYOA loop can exist,
+- the engine can be reasoned about end-to-end,
+- state, choices, and transitions are explicit,
+- and the game terminates cleanly.
 
-If these conditions are met, v0 is complete.  
-Anything beyond this is explicitly out of scope.
+v0 is complete and **must not be extended**.
 
 ---
 
-## Core Design Principles
+### v0 Success Criteria (met)
 
-### 1. Extreme Simplicity
-- No AI
-- No parser
-- No free text input
-- No dynamic narrative systems
-- No clever abstractions
+- One navigable area
+- One simple activity
+- Explicit start and explicit end
+- Numbered choices only
+- Disabled choices shown with reasons
+- State consists only of:
+    - `currentSceneId`
+    - boolean flags
 
-Choices are **numbered**.  
-Players select options like a traditional CYOA book.
-
----
-
-### 2. Hard Separation of Concerns
-
-- **Engine**: game logic and state transitions
-- **Model**: pure data definitions
-- **Runtime**: orchestration / harness code
-
-There is **no UI code** in this project.  
-Godot (or any other renderer) will be a *dumb* consumer of engine output later.
-
----
-
-### 3. Explicit State Only
-
-Game state consists of:
-- `currentSceneId`
-- a dictionary of boolean flags
-
-There are:
-- no counters
-- no timers
-- no implicit history
-- no notion of time
-
-If something matters, it is made explicit.
-
----
-
-### 4. Static Scenes, Dynamic Choices
-
-- Scene text is static and never changes
-- All variability lives in **choices**
-- Choices are always visible
-- Choices may be disabled, with a reason shown
-
-No hidden options.  
-No guessing what the engine is doing.
-
----
-
-### 5. Ordered Effects, No Logic Inside Data
-
-Choices execute an **ordered list of effects**, such as:
-- set a flag
-- clear a flag
-- move to another scene
-
-Rules:
-- exactly one scene transition per choice
-- scene transition must be last
-- no conditionals inside effects
-- no loops
-- no reuse
-
-The engine is dumb by design.
-
----
-
-### 6. Explicit Start and End
-
-- The game starts at an explicitly defined scene
-- The game ends when an `IsEnd = true` scene is reached
-- The engine has no concept of success or failure
-
-Meaning belongs to the story, not the engine.
-
----
-
-### 7. Fail Fast, Always
-
-Invalid data causes the program to crash loudly:
-- missing scenes
-- invalid transitions
-- malformed effects
-
-This is intentional.  
-This is a developer tool, not a consumer product.
-
----
-
-## Current State (v0)
-
-At the v0 endpoint, the project will:
-
-- Run as a console application
-- Present a scene description
-- Show numbered choices
-- Allow the player to select a choice
-- Execute effects
-- Transition between scenes
-- Reach an end scene and terminate
-
-The canonical v0 example is:
+Canonical v0 example:
 - A hallway
-- A kitchen
 - A locked door
-- A single successful interaction
+- A kitchen
 - The game ends
 
-Nothing more.
+---
+
+### v0 Constraints (non-negotiable)
+
+- No AI
+- No parser / free-text input
+- No inventory
+- No counters or timers
+- No conditional scene text
+- No save/load
+- No UI
+- No engine awareness of success or failure
+
+v0 exists to prove the **shape**, not the scale.
 
 ---
 
-## What This Is Not (Yet)
+## v0.1 — Defined
 
-Explicitly out of scope for v0:
+v0.1 extends v0 **horizontally**, not vertically.
 
-- Free-text input
-- Verb/noun parsing
-- Inventory systems
-- AI or procedural narrative
-- Save/load
-- Time-based mechanics
-- env0.terminal integration
-- Reuse systems or templates
-
-These may be explored later, but **not as extensions of v0**.
+It adds enough interactivity to make JSON authoring worthwhile, without introducing new systems or abstractions.
 
 ---
 
-## Why This Exists
+### What v0.1 adds
 
-This project exists to:
-- regain momentum after over-engineering
-- prove a minimal core can work
-- provide a stable base for later experimentation
-- avoid premature abstraction
+- Story content authored in **JSON**
+- All scenes, choices, and effects loaded at startup
+- A small navigable space of **4–5 rooms**
+- Basic navigation between rooms
+- One simple gated interaction using flags
+- One explicit end scene (`IsEnd = true`)
 
-If v0 feels boring, it’s working.
+Example scope:
+- Hallway
+- Kitchen
+- Living room
+- Bedroom
+- Cupboard or utility space
+
+Navigation should feel like moving through a mundane physical space.
 
 ---
 
-## Next Steps (after v0)
+### What v0.1 keeps the same
 
-Possible future directions (not commitments):
-- JSON-authored story graphs
-- Godot-based renderer
-- Alternative input modes
-- Separate game states (e.g. terminal mode)
-- More complex interactions layered *on top*, not baked in
+- Numbered choices only
+- Choices always visible
+- Disabled choices shown with a reason
+- State remains:
+    - `currentSceneId`
+    - boolean flags only
+- Effects remain limited to:
+    - `SetFlag`
+    - `ClearFlag`
+    - `GotoScene`
+- Exactly one scene transition per choice
+- Fail-fast on invalid data
 
-None of these affect the definition of v0.
+The engine remains intentionally dumb.
+
+---
+
+### v0.1 Success Criteria
+
+v0.1 is complete when:
+
+- The player can navigate between **at least 4 rooms**
+- At least one route or room is gated by a flag
+- The objective can be completed, reaching an end scene
+- All story content is loaded from JSON
+- Invalid or malformed JSON crashes loudly with a clear error
+- Behaviour is predictable and traceable
+
+If adding JSON changes engine behaviour, v0.1 has failed.
+
+---
+
+### What v0.1 explicitly does NOT add
+
+- No parser or verb/noun input
+- No inventory system
+- No conditional scene text
+- No counters, timers, or progression systems
+- No save/load
+- No UI or rendering work
+- No Godot integration
+- No attempt at extensibility or tooling
+
+v0.1 exists to prove **authorability**, not flexibility.
 
 ---
 
 ## Status
 
-**v0 is considered complete when the kitchen is reachable and the game ends.**
+- **v0**: complete and frozen on `main`
+- **v0.1**: active development branch
 
-No more.  
-No less.
+The kitchen still exists.  
+Now there are a few more rooms.  
+Nothing else gets invented.
