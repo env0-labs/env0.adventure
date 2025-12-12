@@ -11,4 +11,7 @@ public sealed class ChoiceDefinition
     public string? DisabledReason { get; init; }
 
     public required List<EffectDefinition> Effects { get; init; }
+    
+    public string? ResultText { get; set; }
+
 }

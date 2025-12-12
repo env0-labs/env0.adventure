@@ -96,8 +96,12 @@ while (true)
     // Execute effects (mutates state and may change scene)
     executor.Execute(selectedChoice.Effects, state);
 
-    // Spacer between turns
-    Console.WriteLine();
+    if (!string.IsNullOrWhiteSpace(selectedChoice.ResultText))
+    {
+        Console.WriteLine(selectedChoice.ResultText);
+        Console.WriteLine();
+    }
+
 }
 
 // ------------------------------------------------------------------

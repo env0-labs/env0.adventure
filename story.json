@@ -1,138 +1,272 @@
 {
-  "startSceneId": "hallway",
+  "startSceneId": "bedroom_wake",
   "scenes": [
     {
-      "id": "hallway",
-      "text": "You are standing in a narrow hallway. The kitchen door is shut tight, and a few other rooms branch off this small apartment.",
-      "isEnd": false,
+      "id": "bedroom_wake",
+      "text": "You wake in a hospital bed, though it sits awkwardly in a bedroom. The sheets are clean, the walls unfamiliar. You do not recognise this place.",
       "choices": [
         {
           "number": 1,
-          "text": "Try the kitchen door",
-          "requiresAll": ["kitchenUnlocked"],
-          "disabledReason": "The door is locked from the inside.",
+          "text": "Search the tea chest",
+          "requiresNone": ["searchedTeaChest"],
+          "disabledReason": "You already checked the tea chest.",
+          "resultText": "Beneath old leaves and dust inside the tea chest, you find a small rusty key.",
           "effects": [
-            { "type": "GotoScene", "value": "kitchen" }
+            { "type": "SetFlag", "value": "searchedTeaChest" },
+            { "type": "SetFlag", "value": "hasRustyKey" }
           ]
         },
         {
           "number": 2,
-          "text": "Feel for the spare key in your coat",
-          "requiresNone": ["kitchenUnlocked"],
-          "disabledReason": "You already pocketed the key.",
+          "text": "Open the chest of drawers",
+          "requiresNone": ["searchedDrawers"],
+          "disabledReason": "You already searched the drawers.",
+          "resultText": "Inside the drawers you find a hat. You put it on without really thinking about it.",
           "effects": [
-            { "type": "SetFlag", "value": "kitchenUnlocked" }
+            { "type": "SetFlag", "value": "searchedDrawers" },
+            { "type": "SetFlag", "value": "wearingHat" }
           ]
         },
         {
           "number": 3,
-          "text": "Peek into the living room",
+          "text": "Leave the room into the hallway",
           "effects": [
-            { "type": "GotoScene", "value": "living_room" }
+            { "type": "GotoScene", "value": "hallway_upstairs" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "hallway_upstairs",
+      "text": "The hallway is long and narrow. Stairs descend at the far end. Two doors sit on the right wall, one on the left.",
+      "choices": [
+        {
+          "number": 1,
+          "text": "Open the first door on the right",
+          "effects": [
+            { "type": "GotoScene", "value": "dark_room" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Open the second door on the right",
+          "effects": [
+            { "type": "GotoScene", "value": "linen_cupboard" }
+          ]
+        },
+        {
+          "number": 3,
+          "text": "Open the door on the left",
+          "effects": [
+            { "type": "GotoScene", "value": "bathroom" }
           ]
         },
         {
           "number": 4,
-          "text": "Step into the bedroom",
+          "text": "Go downstairs",
           "effects": [
-            { "type": "GotoScene", "value": "bedroom" }
+            { "type": "GotoScene", "value": "foyer" }
           ]
         }
       ]
     },
+
     {
-      "id": "living_room",
-      "text": "A sagging couch faces a muted television. A narrow door to a utility closet hums softly.",
-      "isEnd": false,
+      "id": "dark_room",
+      "text": "The room beyond the door is pitch black. You cannot see anything at all.",
       "choices": [
         {
           "number": 1,
-          "text": "Open the utility closet",
+          "text": "Feel for a light switch",
+          "resultText": "Your fingers brush a switch. The light flickers on.",
           "effects": [
-            { "type": "GotoScene", "value": "utility_closet" }
+            { "type": "GotoScene", "value": "dark_room_lit" }
           ]
         },
         {
           "number": 2,
           "text": "Return to the hallway",
           "effects": [
-            { "type": "GotoScene", "value": "hallway" }
+            { "type": "GotoScene", "value": "hallway_upstairs" }
           ]
         }
       ]
     },
+
     {
-      "id": "utility_closet",
-      "text": "The closet is cramped but tidy. A breaker box clicks quietly next to a bundle of cleaning supplies.",
-      "isEnd": false,
+      "id": "dark_room_lit",
+      "text": "The room is small. A bed sits against the wall, and a nightstand rests beside it.",
       "choices": [
         {
           "number": 1,
-          "text": "Flip the main breaker",
-          "requiresNone": ["powerRestored"],
-          "disabledReason": "The breaker is already on.",
+          "text": "Search the bed",
+          "requiresNone": ["searchedBed"],
+          "disabledReason": "There is nothing else to find there.",
+          "resultText": "You find nothing but cold sheets and an uneasy feeling.",
           "effects": [
-            { "type": "SetFlag", "value": "powerRestored" }
+            { "type": "SetFlag", "value": "searchedBed" }
           ]
         },
         {
           "number": 2,
-          "text": "Head back to the living room",
+          "text": "Check the nightstand",
+          "requiresNone": ["readNote"],
+          "disabledReason": "You already read the note.",
+          "resultText": "Inside the drawer is a folded note. It reads: \"You should never have come here.\"",
           "effects": [
-            { "type": "GotoScene", "value": "living_room" }
+            { "type": "SetFlag", "value": "readNote" }
+          ]
+        },
+        {
+          "number": 3,
+          "text": "Return to the hallway",
+          "effects": [
+            { "type": "GotoScene", "value": "hallway_upstairs" }
           ]
         }
       ]
     },
+
     {
-      "id": "bedroom",
-      "text": "The bedroom is dim, lit only by streetlight through the blinds. A nightstand drawer is half-open.",
-      "isEnd": false,
+      "id": "linen_cupboard",
+      "text": "A narrow linen cupboard. Four shelves line the walls.",
       "choices": [
         {
           "number": 1,
-          "text": "Check the nightstand drawer",
-          "requiresNone": ["flashlight"],
-          "disabledReason": "You already rummaged through it.",
+          "text": "Search the shelves",
+          "requiresNone": ["searchedLinen"],
+          "disabledReason": "You already searched every shelf.",
+          "resultText": "You find nothing of interest. Everything is neatly folded and useless.",
           "effects": [
-            { "type": "SetFlag", "value": "flashlight" }
+            { "type": "SetFlag", "value": "searchedLinen" }
           ]
         },
         {
           "number": 2,
           "text": "Return to the hallway",
           "effects": [
-            { "type": "GotoScene", "value": "hallway" }
+            { "type": "GotoScene", "value": "hallway_upstairs" }
           ]
         }
       ]
     },
+
+    {
+      "id": "bathroom",
+      "text": "A clean bathroom. The mirror above the sink reflects you poorly.",
+      "choices": [
+        {
+          "number": 1,
+          "text": "Inspect the mirror",
+          "requiresNone": ["tookPills"],
+          "disabledReason": "You already took the pill bottle.",
+          "resultText": "Behind the mirror you find a small pill bottle. You take it.",
+          "effects": [
+            { "type": "SetFlag", "value": "tookPills" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Return to the hallway",
+          "effects": [
+            { "type": "GotoScene", "value": "hallway_upstairs" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "foyer",
+      "text": "The foyer opens wide. A heavy front door stands ahead. Doors lead left and right.",
+      "choices": [
+        {
+          "number": 1,
+          "text": "Try the front door",
+          "requiresAll": ["hasFrontDoorKey"],
+          "disabledReason": "The door is locked. This keyhole does not match the rusty key.",
+          "effects": [
+            { "type": "GotoScene", "value": "ending" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Enter the garage",
+          "effects": [
+            { "type": "GotoScene", "value": "garage" }
+          ]
+        },
+        {
+          "number": 3,
+          "text": "Enter the kitchen",
+          "effects": [
+            { "type": "GotoScene", "value": "kitchen" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "garage",
+      "text": "A quiet garage. A car sits idle. A toolbox rests nearby.",
+      "choices": [
+        {
+          "number": 1,
+          "text": "Search the toolbox",
+          "requiresNone": ["hasCrowbar"],
+          "disabledReason": "You already took the crowbar.",
+          "resultText": "Inside the toolbox you find a heavy crowbar.",
+          "effects": [
+            { "type": "SetFlag", "value": "hasCrowbar" }
+          ]
+        },
+        {
+          "number": 2,
+          "text": "Search the car",
+          "requiresNone": ["searchedCar"],
+          "disabledReason": "There is nothing else in the car.",
+          "resultText": "The car is empty. It hasn’t been used in a long time.",
+          "effects": [
+            { "type": "SetFlag", "value": "searchedCar" }
+          ]
+        },
+        {
+          "number": 3,
+          "text": "Return to the foyer",
+          "effects": [
+            { "type": "GotoScene", "value": "foyer" }
+          ]
+        }
+      ]
+    },
+
     {
       "id": "kitchen",
-      "text": "You slip into the kitchen. Countertops are clean, but the kettle sits cold in the corner.",
-      "isEnd": false,
+      "text": "The kitchen is tidy but cold. A strange mark stains the floor near the corner.",
       "choices": [
         {
           "number": 1,
-          "text": "Start the kettle and make tea",
-          "requiresAll": ["powerRestored"],
-          "disabledReason": "Nothing works while the power is off.",
+          "text": "Inspect the strange mark",
+          "requiresAll": ["hasCrowbar"],
+          "disabledReason": "You need something to pry the floorboard up.",
+          "resultText": "You pry up the loose board. Beneath it is a clean, heavy key.",
           "effects": [
-            { "type": "GotoScene", "value": "end" }
+            { "type": "SetFlag", "value": "hasFrontDoorKey" }
           ]
         },
         {
           "number": 2,
-          "text": "Head back to the hallway",
+          "text": "Return to the foyer",
           "effects": [
-            { "type": "GotoScene", "value": "hallway" }
+            { "type": "GotoScene", "value": "foyer" }
           ]
         }
       ]
     },
+
     {
-      "id": "end",
-      "text": "The kettle whistles. You pour a mug of tea and call the evening a success.",
+      "id": "ending",
+      "text": "The front door opens. Cool air rushes in as you step outside.",
       "isEnd": true,
       "choices": []
     }
