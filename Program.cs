@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using env0.adventure.Engine;
 using env0.adventure.Model;
 using env0.adventure.Runtime;
@@ -9,7 +10,7 @@ Console.WriteLine();
 // ------------------------------------------------------------------
 // Load story from JSON
 // ------------------------------------------------------------------
-const string storyPath = "story.json";
+var storyPath = Path.Combine(AppContext.BaseDirectory, "story.json");
 
 if (!File.Exists(storyPath))
     throw new InvalidOperationException($"Story file not found: {storyPath}");
@@ -22,7 +23,8 @@ var story = JsonSerializer.Deserialize<StoryDefinition>(
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true
+        AllowTrailingCommas = true,
+        Converters = { new JsonStringEnumConverter() }
     }
 ) ?? throw new InvalidOperationException("Story file could not be parsed.");
 
