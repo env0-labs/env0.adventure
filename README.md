@@ -1,21 +1,28 @@
 # env0.adventure
 
-A narrative-driven game built around a strict separation between **game logic** and **front-end presentation**, designed to support multiple gameplay “chapters” using a shared UI and interaction contract.
+**env0.adventure** is a narrative-driven game about interacting with a machine you do not fully understand.
 
-This repository currently focuses on **Chapter 1: Physical Space**, where the player interacts with a machine while moving through a physical environment.
+The player begins in a physical space, engaging with a screen, controls, and their surrounding environment. Progress is driven through observation, choice, and interpretation rather than mechanical skill. Over time, the game shifts perspective — from physical interaction, to digital exploration, and eventually to direct engagement with an intentionally limited, unreliable artificial intelligence.
 
-Terminal-based and AI-driven chapters are planned for later versions and are **explicitly out of scope** for the current milestones.
+The experience is text-forward, slow-paced, and deliberate. Pauses, emphasis, and restraint are used as narrative tools. The goal is not realism or simulation accuracy, but tension, uncertainty, and meaning derived from partial information.
+
+While the project is built with a strict separation between game logic and presentation, this is a **means**, not the point. The separation exists to support a cohesive experience across multiple narrative chapters that share a single front end, not as a technical exercise in abstraction.
+
+This repository currently focuses on **Chapter 1: Physical Space**.
+
+Terminal-based and AI-driven chapters are planned for later versions and are explicitly out of scope for the current milestones.
 
 ---
 
 ## Design Principles
 
+- **Narrative first**
+  - Systems exist to support pacing, tension, and consequence.
+- **Semantic communication**
+  - The core expresses meaning (emphasis, rhythm, intent), not UI behavior.
 - **Strict separation of concerns**
   - Game logic is engine-agnostic.
   - Godot is responsible only for presentation and input delivery.
-- **Semantic, not procedural, hooks**
-  - The core expresses meaning (emphasis, rhythm, intent).
-  - The front end decides how that meaning is rendered.
 - **Playable at every version**
   - Every v0.x milestone produces a runnable, playable build.
 - **No premature future features**
@@ -26,22 +33,22 @@ Terminal-based and AI-driven chapters are planned for later versions and are **e
 ## Architecture Overview
 
 ### Core Logic
-- Emits semantic output events (text, emphasis, pacing).
-- Requests player input via abstract input requests.
-- Maintains game state and narrative flow.
-- Has no knowledge of Godot, UI layout, animation, audio, or timing in milliseconds.
+- Drives narrative flow, state, and consequence.
+- Emits semantic output (text, emphasis, pacing).
+- Requests player input abstractly (choices, free text, continue).
+- Has no knowledge of Godot, UI layout, animation, audio, or millisecond timing.
 
 ### Front End (Godot)
-- Renders output lines based on semantic metadata.
+- Renders output based on semantic metadata.
 - Applies pacing, emphasis, and styling rules.
-- Presents input (choices, free text) as requested by the core.
-- Can swap core implementations without changing UI code.
+- Presents input exactly as requested by the core.
+- Remains reusable across all chapters.
 
 ---
 
 ## Unified Front-End Contract (v0.x)
 
-All chapters communicate with the front end using the same contract.
+All chapters communicate with the front end using the same contract. This contract is intentionally small, semantic, and stable.
 
 ### Output
 
@@ -56,9 +63,9 @@ record OutputLine(
 );
 ```
 
-- **LineType** controls baseline presentation.
+- **LineType** defines baseline presentation semantics.
 - **Beat** indicates a narrative pause before the next line.
-- Beats are semantic; the front end maps them to actual delays.
+- Beats are declarative; the front end maps them to actual timing.
 
 ---
 
@@ -75,7 +82,7 @@ record InputRequest(
 ```
 
 - The engine requests input.
-- The front end never guesses interaction mode.
+- The front end never infers interaction mode.
 
 ---
 
@@ -85,8 +92,8 @@ record InputRequest(
 enum GameMode { Physical, Terminal, AAI }
 ```
 
-- Currently only `Physical` is used.
-- Included early to stabilise the contract for future chapters.
+- Only `Physical` is active in v0.x.
+- Included early to stabilise the contract for later chapters.
 
 ---
 
@@ -96,20 +103,15 @@ enum GameMode { Physical, Terminal, AAI }
 **Status:** ✅ Complete
 
 **What it is**
-- Engine-agnostic core logic exists.
-- Narrative flow, state handling, and interaction model are functional.
-- Content can be authored externally.
-- No dependency on Godot or any front-end.
-- Output and input are conceptual, not yet rendered.
+- Engine-agnostic narrative core exists.
+- State, flow, and interaction logic are functional.
+- Content authored externally.
+- No front-end dependency.
 
 **What it is not**
-- No playable Godot build.
-- No pacing, emphasis, or presentation rules.
-- No concern for UX beyond correctness.
-
-**Completion meaning**
-- The narrative engine exists as a coherent, testable system.
-- The project moves from “engine experiment” to “game integration.”
+- No playable build.
+- No pacing or presentation rules.
+- No UX concerns beyond correctness.
 
 ---
 
@@ -117,12 +119,10 @@ enum GameMode { Physical, Terminal, AAI }
 **Status:** ⏳ In progress
 
 **What it looks like**
-- Godot renders output lines from the core.
-- Semantic output supported:
-  - `LineType`: `Standard | System | Error | Emphasis`
-  - `Beat`: `None | Short | Medium | Long`
-- Player can make choices and advance the narrative.
-- Single gameplay mode: `Physical`.
+- Godot renders narrative output.
+- Emphasis and pacing are respected.
+- Player makes choices and advances the story.
+- Single gameplay mode: Physical.
 
 **Done when**
 - A short physical scene is playable end-to-end without explanation.
@@ -133,25 +133,24 @@ enum GameMode { Physical, Terminal, AAI }
 
 **What it looks like**
 - Multi-room / multi-context physical gameplay.
-- Godot reliably renders larger authored content sets.
-- Minimal content validation (fail fast, fail loud).
-- Basic dev shortcuts (restart, jump to node, dump state).
+- Stable rendering under real content volume.
+- Minimal validation and developer shortcuts.
 
 **Done when**
-- Content authoring speed exceeds front-end breakage.
+- Authoring content is faster than breaking the front end.
 
 ---
 
 ### v0.4 — Feedback & Presentation Rules
 
 **What it looks like**
-- Consistent visual and pacing reactions to `LineType` and `Beat`.
-- Skip / fast-forward behaviour.
-- Text speed scaling.
-- Optional UI responses to state changes.
+- Consistent visual response to emphasis and pacing.
+- Skip / fast-forward behavior.
+- Player-adjustable text speed.
+- Optional UI reactions to state changes.
 
 **Done when**
-- Pacing and emphasis land without manual babysitting.
+- Pacing and emphasis work without manual tuning.
 
 ---
 
@@ -161,29 +160,28 @@ enum GameMode { Physical, Terminal, AAI }
 - Complete physical chapter segment (10–20 minutes).
 - Stable save/load.
 - Front end treated as reusable and stable.
-- Contract changes become deliberate and rare.
 
 **Done when**
-- It can be shared for real feedback about the game, not the tech.
+- It can be shared for feedback about the experience, not the tech.
 
 ---
 
 ## Out of Scope for v0.x
 
-- Terminal gameplay (`env0.terminal`)
+- Terminal gameplay
 - Artificial Artificial Intelligence systems
 - Engine-specific logic in the core
-- Millisecond-based timing in narrative
-- Feature parity with planned v1.0 chapters
+- Millisecond-based narrative timing
+- Feature parity with later chapters
 
 ---
 
 ## Long-Term Vision (v1.0)
 
-The full game will consist of three chapters:
+The complete game consists of three chapters:
 
 1. **Physical** — interaction with the machine in real space.
 2. **Terminal** — exploration of digital systems.
-3. **AAI** — interaction with a deliberately limited, janky artificial intelligence.
+3. **AAI** — engagement with a deliberately limited, unreliable artificial intelligence.
 
-All chapters will share the same front end and communication contract, differing only in the core logic implementation.
+All chapters share a single front end and communication contract, differing only in their core logic implementation.
