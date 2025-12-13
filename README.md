@@ -106,10 +106,10 @@ enum GameMode { Physical, Terminal, AAI }
 - Engine-agnostic narrative core exists.
 - State, flow, and interaction logic are functional.
 - Content authored externally.
-- No front-end dependency.
+- A playable **.NET console build** exists with text-only interaction.
 
 **What it is not**
-- No playable build.
+- No graphical UI.
 - No pacing or presentation rules.
 - No UX concerns beyond correctness.
 
