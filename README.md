@@ -1,201 +1,189 @@
-﻿# env0.adventure — v0
+# env0.adventure
 
-## What this is
+A narrative-driven game built around a strict separation between **game logic** and **front-end presentation**, designed to support multiple gameplay “chapters” using a shared UI and interaction contract.
 
-A **minimal, old-school Choose Your Own Adventure engine** written in C#.
+This repository currently focuses on **Chapter 1: Physical Space**, where the player interacts with a machine while moving through a physical environment.
 
-This is a deliberately constrained experiment to prove that:
-- a tiny, boring core can exist,
-- it can be reasoned about easily,
-- and it can later be rendered by something like Godot without rewriting the logic.
-
-This is **not** a game yet.  
-This is **not** a framework.  
-This is a working foundation that can be thrown away without regret.
+Terminal-based and AI-driven chapters are planned for later versions and are **explicitly out of scope** for the current milestones.
 
 ---
 
-## v0 Success Criteria
+## Design Principles
 
-The experiment is considered **successful** if all of the following are true:
-
-### Backend
-- One navigable area consisting of multiple connected locations
-- One simple activity that can be completed
-- Pure C# logic with no UI concerns
-
-### Frontend (for later)
-- Single static screen
-- Simple CRT-style visual treatment
-- No audio
-- No reactive or dynamic FX
-
-If these conditions are met, v0 is complete.  
-Anything beyond this is explicitly out of scope.
+- **Strict separation of concerns**
+  - Game logic is engine-agnostic.
+  - Godot is responsible only for presentation and input delivery.
+- **Semantic, not procedural, hooks**
+  - The core expresses meaning (emphasis, rhythm, intent).
+  - The front end decides how that meaning is rendered.
+- **Playable at every version**
+  - Every v0.x milestone produces a runnable, playable build.
+- **No premature future features**
+  - Terminal and AI systems are deferred until much later versions.
 
 ---
 
-## Core Design Principles
+## Architecture Overview
 
-### 1. Extreme Simplicity
-- No AI
-- No parser
-- No free text input
-- No dynamic narrative systems
-- No clever abstractions
+### Core Logic
+- Emits semantic output events (text, emphasis, pacing).
+- Requests player input via abstract input requests.
+- Maintains game state and narrative flow.
+- Has no knowledge of Godot, UI layout, animation, audio, or timing in milliseconds.
 
-Choices are **numbered**.  
-Players select options like a traditional CYOA book.
-
----
-
-### 2. Hard Separation of Concerns
-
-- **Engine**: game logic and state transitions
-- **Model**: pure data definitions
-- **Runtime**: orchestration / harness code
-
-There is **no UI code** in this project.  
-Godot (or any other renderer) will be a *dumb* consumer of engine output later.
+### Front End (Godot)
+- Renders output lines based on semantic metadata.
+- Applies pacing, emphasis, and styling rules.
+- Presents input (choices, free text) as requested by the core.
+- Can swap core implementations without changing UI code.
 
 ---
 
-### 3. Explicit State Only
+## Unified Front-End Contract (v0.x)
 
-Game state consists of:
-- `currentSceneId`
-- a dictionary of boolean flags
+All chapters communicate with the front end using the same contract.
 
-There are:
-- no counters
-- no timers
-- no implicit history
-- no notion of time
+### Output
 
-If something matters, it is made explicit.
+```csharp
+enum LineType { Standard, System, Error, Emphasis }
+enum Beat { None, Short, Medium, Long }
 
----
+record OutputLine(
+    string Text,
+    LineType Type = LineType.Standard,
+    Beat Beat = Beat.None
+);
+```
 
-### 4. Static Scenes, Dynamic Choices
-
-- Scene text is static and never changes
-- All variability lives in **choices**
-- Choices are always visible
-- Choices may be disabled, with a reason shown
-
-No hidden options.  
-No guessing what the engine is doing.
+- **LineType** controls baseline presentation.
+- **Beat** indicates a narrative pause before the next line.
+- Beats are semantic; the front end maps them to actual delays.
 
 ---
 
-### 5. Ordered Effects, No Logic Inside Data
+### Input Requests
 
-Choices execute an **ordered list of effects**, such as:
-- set a flag
-- clear a flag
-- move to another scene
+```csharp
+enum InputKind { Choice, FreeText, Continue }
 
-Rules:
-- exactly one scene transition per choice
-- scene transition must be last
-- no conditionals inside effects
-- no loops
-- no reuse
+record InputRequest(
+    InputKind Kind,
+    string Prompt,
+    IReadOnlyList<ChoiceOption>? Choices
+);
+```
 
-The engine is dumb by design.
-
----
-
-### 6. Explicit Start and End
-
-- The game starts at an explicitly defined scene
-- The game ends when an `IsEnd = true` scene is reached
-- The engine has no concept of success or failure
-
-Meaning belongs to the story, not the engine.
+- The engine requests input.
+- The front end never guesses interaction mode.
 
 ---
 
-### 7. Fail Fast, Always
+### Game Mode
 
-Invalid data causes the program to crash loudly:
-- missing scenes
-- invalid transitions
-- malformed effects
+```csharp
+enum GameMode { Physical, Terminal, AAI }
+```
 
-This is intentional.  
-This is a developer tool, not a consumer product.
-
----
-
-## Current State (v0)
-
-At the v0 endpoint, the project will:
-
-- Run as a console application
-- Present a scene description
-- Show numbered choices
-- Allow the player to select a choice
-- Execute effects
-- Transition between scenes
-- Reach an end scene and terminate
-
-The canonical v0 example is:
-- A hallway
-- A kitchen
-- A locked door
-- A single successful interaction
-- The game ends
-
-Nothing more.
+- Currently only `Physical` is used.
+- Included early to stabilise the contract for future chapters.
 
 ---
 
-## What This Is Not (Yet)
+## Version Roadmap
 
-Explicitly out of scope for v0:
+### v0.1 — Core Logic Baseline (Complete)
+**Status:** ✅ Complete
 
-- Free-text input
-- Verb/noun parsing
-- Inventory systems
-- AI or procedural narrative
-- Save/load
-- Time-based mechanics
-- env0.terminal integration
-- Reuse systems or templates
+**What it is**
+- Engine-agnostic core logic exists.
+- Narrative flow, state handling, and interaction model are functional.
+- Content can be authored externally.
+- No dependency on Godot or any front-end.
+- Output and input are conceptual, not yet rendered.
 
-These may be explored later, but **not as extensions of v0**.
+**What it is not**
+- No playable Godot build.
+- No pacing, emphasis, or presentation rules.
+- No concern for UX beyond correctness.
 
----
-
-## Why This Exists
-
-This project exists to:
-- regain momentum after over-engineering
-- prove a minimal core can work
-- provide a stable base for later experimentation
-- avoid premature abstraction
-
-If v0 feels boring, it’s working.
+**Completion meaning**
+- The narrative engine exists as a coherent, testable system.
+- The project moves from “engine experiment” to “game integration.”
 
 ---
 
-## Next Steps (after v0)
+### v0.2 — First Playable Loop
+**Status:** ⏳ In progress
 
-Possible future directions (not commitments):
-- JSON-authored story graphs
-- Godot-based renderer
-- Alternative input modes
-- Separate game states (e.g. terminal mode)
-- More complex interactions layered *on top*, not baked in
+**What it looks like**
+- Godot renders output lines from the core.
+- Semantic output supported:
+  - `LineType`: `Standard | System | Error | Emphasis`
+  - `Beat`: `None | Short | Medium | Long`
+- Player can make choices and advance the narrative.
+- Single gameplay mode: `Physical`.
 
-None of these affect the definition of v0.
+**Done when**
+- A short physical scene is playable end-to-end without explanation.
 
 ---
 
-## Status
+### v0.3 — Contract Hardening & Authoring Flow
 
-**v0 is considered complete when the kitchen is reachable and the game ends.**
+**What it looks like**
+- Multi-room / multi-context physical gameplay.
+- Godot reliably renders larger authored content sets.
+- Minimal content validation (fail fast, fail loud).
+- Basic dev shortcuts (restart, jump to node, dump state).
 
-No more.  
-No less.
+**Done when**
+- Content authoring speed exceeds front-end breakage.
+
+---
+
+### v0.4 — Feedback & Presentation Rules
+
+**What it looks like**
+- Consistent visual and pacing reactions to `LineType` and `Beat`.
+- Skip / fast-forward behaviour.
+- Text speed scaling.
+- Optional UI responses to state changes.
+
+**Done when**
+- Pacing and emphasis land without manual babysitting.
+
+---
+
+### v0.5 — Chapter 1 Vertical Slice
+
+**What it looks like**
+- Complete physical chapter segment (10–20 minutes).
+- Stable save/load.
+- Front end treated as reusable and stable.
+- Contract changes become deliberate and rare.
+
+**Done when**
+- It can be shared for real feedback about the game, not the tech.
+
+---
+
+## Out of Scope for v0.x
+
+- Terminal gameplay (`env0.terminal`)
+- Artificial Artificial Intelligence systems
+- Engine-specific logic in the core
+- Millisecond-based timing in narrative
+- Feature parity with planned v1.0 chapters
+
+---
+
+## Long-Term Vision (v1.0)
+
+The full game will consist of three chapters:
+
+1. **Physical** — interaction with the machine in real space.
+2. **Terminal** — exploration of digital systems.
+3. **AAI** — interaction with a deliberately limited, janky artificial intelligence.
+
+All chapters will share the same front end and communication contract, differing only in the core logic implementation.
