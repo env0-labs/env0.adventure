@@ -25,6 +25,47 @@ public class SceneRepositoryTests
     }
 
     [Fact]
+    public void Throws_when_story_is_null()
+    {
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(null!));
+    }
+
+    [Fact]
+    public void Throws_when_start_scene_id_missing()
+    {
+        var story = BuildStory(
+            startSceneId: " ",
+            CreateScene("start", choiceText: "Go", gotoScene: "end"),
+            CreateScene("end", isEnd: true)
+        );
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_no_scenes_defined()
+    {
+        var story = new StoryDefinition
+        {
+            StartSceneId = "start",
+            Scenes = new List<SceneDefinition>()
+        };
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_start_scene_missing()
+    {
+        var story = BuildStory(
+            startSceneId: "start",
+            CreateScene("end", isEnd: true)
+        );
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
     public void Throws_when_goto_target_missing()
     {
         var story = BuildStory(
@@ -33,6 +74,139 @@ public class SceneRepositoryTests
         );
 
         Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_goto_target_is_empty()
+    {
+        var scene = new SceneDefinition
+        {
+            Id = "start",
+            Text = "start",
+            Choices =
+            [
+                new ChoiceDefinition
+                {
+                    Number = 1,
+                    Text = "Go",
+                    Effects = [new EffectDefinition { Type = EffectType.GotoScene, Value = " " }]
+                }
+            ]
+        };
+
+        var story = BuildStory("start", scene);
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_scene_missing_text()
+    {
+        var story = new StoryDefinition
+        {
+            StartSceneId = "start",
+            Scenes =
+            [
+                new SceneDefinition
+                {
+                    Id = "start",
+                    Text = " ",
+                    Choices =
+                    [
+                        new ChoiceDefinition
+                        {
+                            Number = 1,
+                            Text = "Go",
+                            Effects = [new EffectDefinition { Type = EffectType.GotoScene, Value = "end" }]
+                        }
+                    ]
+                },
+                CreateScene("end", isEnd: true)
+            ]
+        };
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_scene_choices_null()
+    {
+        var story = new StoryDefinition
+        {
+            StartSceneId = "start",
+            Scenes =
+            [
+                new SceneDefinition
+                {
+                    Id = "start",
+                    Text = "start",
+                    Choices = null!
+                }
+            ]
+        };
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_choice_text_missing()
+    {
+        var story = BuildStory(
+            startSceneId: "start",
+            new SceneDefinition
+            {
+                Id = "start",
+                Text = "start",
+                Choices =
+                [
+                    new ChoiceDefinition
+                    {
+                        Number = 1,
+                        Text = " ",
+                        Effects = [new EffectDefinition { Type = EffectType.GotoScene, Value = "end" }]
+                    }
+                ]
+            },
+            CreateScene("end", isEnd: true)
+        );
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_when_choice_effects_missing()
+    {
+        var story = BuildStory(
+            startSceneId: "start",
+            new SceneDefinition
+            {
+                Id = "start",
+                Text = "start",
+                Choices =
+                [
+                    new ChoiceDefinition
+                    {
+                        Number = 1,
+                        Text = "Go",
+                        Effects = new List<EffectDefinition>()
+                    }
+                ]
+            }
+        );
+
+        Assert.Throws<InvalidOperationException>(() => new SceneRepository(story));
+    }
+
+    [Fact]
+    public void Throws_on_duplicate_scene_ids()
+    {
+        var story = BuildStory(
+            startSceneId: "start",
+            CreateScene("start", choiceText: "Go", gotoScene: "end"),
+            CreateScene("start", isEnd: true)
+        );
+
+        Assert.Throws<ArgumentException>(() => new SceneRepository(story));
     }
 
     [Fact]

@@ -52,6 +52,48 @@ public class ChoiceAndEffectTests
     }
 
     [Fact]
+    public void Choice_disabled_when_requires_none_flag_present()
+    {
+        var state = new GameState("start");
+        state.SetFlag("alarmTripped");
+
+        var choice = new ChoiceDefinition
+        {
+            Number = 1,
+            Text = "Enter",
+            RequiresNone = ["alarmTripped"],
+            DisabledReason = "The alarm is still on.",
+            Effects = [new EffectDefinition { Type = EffectType.GotoScene, Value = "next" }]
+        };
+
+        var enabled = _evaluator.IsEnabled(choice, state, out var reason);
+
+        Assert.False(enabled);
+        Assert.Equal("The alarm is still on.", reason);
+    }
+
+    [Fact]
+    public void Choice_disabled_when_both_requirements_fail()
+    {
+        var state = new GameState("start");
+        state.SetFlag("blocked");
+
+        var choice = new ChoiceDefinition
+        {
+            Number = 1,
+            Text = "Proceed",
+            RequiresAll = ["hasKey"],
+            RequiresNone = ["blocked"],
+            Effects = [new EffectDefinition { Type = EffectType.GotoScene, Value = "next" }]
+        };
+
+        var enabled = _evaluator.IsEnabled(choice, state, out var reason);
+
+        Assert.False(enabled);
+        Assert.Null(reason);
+    }
+
+    [Fact]
     public void Effect_executor_updates_state_and_scene()
     {
         var state = new GameState("start");
@@ -65,6 +107,42 @@ public class ChoiceAndEffectTests
 
         Assert.True(state.HasFlag("foundKey"));
         Assert.Equal("hallway", state.CurrentSceneId);
+    }
+
+    [Fact]
+    public void Effect_executor_throws_on_unknown_type()
+    {
+        var state = new GameState("start");
+        var effects = new List<EffectDefinition>
+        {
+            new() { Type = (EffectType)999, Value = "ignored" }
+        };
+
+        Assert.Throws<InvalidOperationException>(() => _executor.Execute(effects, state));
+    }
+
+    [Fact]
+    public void Effect_executor_requires_value_for_scene_change()
+    {
+        var state = new GameState("start");
+        var effects = new List<EffectDefinition>
+        {
+            new() { Type = EffectType.GotoScene, Value = " " }
+        };
+
+        Assert.Throws<InvalidOperationException>(() => _executor.Execute(effects, state));
+    }
+
+    [Fact]
+    public void Effect_executor_requires_value_for_flags()
+    {
+        var state = new GameState("start");
+        var effects = new List<EffectDefinition>
+        {
+            new() { Type = EffectType.SetFlag, Value = " " }
+        };
+
+        Assert.Throws<InvalidOperationException>(() => _executor.Execute(effects, state));
     }
 
     [Fact]
