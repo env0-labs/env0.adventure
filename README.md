@@ -187,3 +187,14 @@ If Godot needs to know game rules, v0.2 has failed.
 - No engine awareness of success or failure
 
 v0.2 exists to prove presentation, not power.
+
+---
+
+## Current state (v0.2 work-in-progress)
+
+- Console app now builds as an executable and copies `story/*.json` alongside the binary.
+- Temporary preloader lists available `story/*.json` files and prompts for a numeric selection before loading.
+- xUnit test project added to cover scene validation, choice gating, and effect execution.
+- Story content lives in `story/`; original `story/story.json` plus the new `story/newcalifornia.json`.
+
+Next up: front-end integration for v0.2 (Godot view layer using the existing engine rules). The current preloader is a temporary console aid for story switching during authoring.
