@@ -8,9 +8,42 @@ Console.WriteLine("env0.adventure booting");
 Console.WriteLine();
 
 // ------------------------------------------------------------------
-// Load story from JSON
+// Select story JSON (preloader)
 // ------------------------------------------------------------------
-var storyPath = Path.Combine(AppContext.BaseDirectory, "story.json");
+var storyDirectory = Path.Combine(AppContext.BaseDirectory, "story");
+
+if (!Directory.Exists(storyDirectory))
+    throw new InvalidOperationException($"Story directory not found: {storyDirectory}");
+
+var availableStories = Directory
+    .GetFiles(storyDirectory, "*.json", SearchOption.TopDirectoryOnly)
+    .OrderBy(Path.GetFileName)
+    .ToList();
+
+if (availableStories.Count == 0)
+    throw new InvalidOperationException($"No story JSON files found in {storyDirectory}.");
+
+Console.WriteLine("Select a story file to load:");
+for (var i = 0; i < availableStories.Count; i++)
+{
+    var fileName = Path.GetFileName(availableStories[i]);
+    Console.WriteLine($"{i + 1}. {fileName}");
+}
+
+Console.WriteLine();
+Console.Write("> ");
+
+var selectedStoryPath = Console.ReadLine();
+Console.WriteLine();
+
+if (!int.TryParse(selectedStoryPath, out var selectedStoryIndex) ||
+    selectedStoryIndex < 1 ||
+    selectedStoryIndex > availableStories.Count)
+{
+    throw new InvalidOperationException("Invalid selection. Please enter a valid story number.");
+}
+
+var storyPath = availableStories[selectedStoryIndex - 1];
 
 if (!File.Exists(storyPath))
     throw new InvalidOperationException($"Story file not found: {storyPath}");
